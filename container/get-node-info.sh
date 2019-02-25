@@ -21,15 +21,21 @@
 ver=$(./get-version.sh)
 type="GINCOIN_MN"
 mn_status="$(/home/gin/gincoin-cli -rpcuser=healthcheck -rpcpassword=healthcheck masternode status | jq .status)"
+block_count="$(/home/gin/gincoin-cli getblockchaininfo | jq .blocks)"
+sync_status="$(/home/gin/gincoin-cli mnsync status | jq .IsBlockchainSynced)"
 
 printf "\
 TYPE: %s \n\
 VERSION: %s \n\
 MN_STATUS: %s \n\
-" "$type" "$ver" "$mn_status" > /home/gin/.gincoincore/node.info
+BLOCKS: %s \n\
+SYNCED: %s \n\
+" "$type" "$ver" "$mn_status" "$block_count" "$sync_status"> /home/gin/.gincoincore/node.info
 
 printf "\
 TYPE: %s \n\
 VERSION: %s \n\
 MN_STATUS: %s \n\
-" "$type" "$ver" "$mn_status"
+BLOCKS: %s \n\
+SYNCED: %s \n\
+" "$type" "$ver" "$mn_status" "$block_count" "$sync_status"
