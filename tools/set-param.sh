@@ -26,7 +26,14 @@ VALUE=$(echo "$1" | sed "s/[^>]*=//")
 case $PARAM in
     ip)
         TEMP=$(sed "s/externalip=.*/externalip=$VALUE/g" "$BASEDIR/../data/gincoin.conf")
-        TEMP=$(echo "$TEMP" | sed "s/masternodeaddr=.*/masternodeaddr=$VALUE:10111/g")
+        case $VALUE in 
+            *:*)
+                TEMP=$(echo "$TEMP" | sed "s/masternodeaddr=.*/masternodeaddr=[$VALUE]:10111/g")
+            ;;
+            *)
+                TEMP=$(echo "$TEMP" | sed "s/masternodeaddr=.*/masternodeaddr=$VALUE:10111/g")
+            ;;
+        esac
         printf "%s" "$TEMP" > "$BASEDIR/../data/gincoin.conf"
     ;;
     nodeprivkey)
