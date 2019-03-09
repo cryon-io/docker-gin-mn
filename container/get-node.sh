@@ -45,5 +45,7 @@ case "$URL" in
     ;;
 esac
 
-cp -f "$(find . -name gincoind)" . 2>/dev/null || exit 0
-cp -f "$(find . -name gincoin-cli)" . 2>/dev/null || exit 0
+cp -f "$(find . -name gincoind)" . 2>/dev/null
+cp -f "$(find . -name gincoin-cli)" . 2>/dev/null
+
+exit 0
