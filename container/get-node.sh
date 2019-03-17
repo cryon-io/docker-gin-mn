@@ -48,4 +48,6 @@ esac
 cp -f "$(find . -name gincoind)" . 2>/dev/null
 cp -f "$(find . -name gincoin-cli)" . 2>/dev/null
 
+printf "%s" "$(printf "%s" "$GIT_INFO" | jq .tag_name -r | sed 's\v\\')" > ./version
+
 exit 0
