@@ -20,16 +20,24 @@
 
 BASEDIR=$(dirname "$0")
 
-if [ -f "$BASEDIR/../project_id" ]; then 
+if [ -f "$BASEDIR/../project_id" ]; then
     PROJECT=$(sed 's/PROJECT=//g' "$BASEDIR/../project_id")
-    PROJECT="--project-name $PROJECT"
-fi 
+    #PROJECT="--project-name $PROJECT"
+else
+    frffl=""
+fi
 
-container=$(docker-compose -f "$BASEDIR/../docker-compose.yml" $PROJECT ps -q mn 2> /dev/null)
+container=$(for c in $(docker-compose -f "$BASEDIR/../docker-compose.yml" ${frffl-"--project-name"} ${frffl-"$PROJECT"} ps -q mn 2>/dev/null); do
+    if [ "$(docker inspect -f '{{.State.Running}}' "$c" 2>/dev/null)" = "true" ]; then
+        printf "%s" "$c"
+        break
+    fi
+done)
+
 STATUS="NOT RUNNING"
 CREATED_AT="-"
 
-if [ -z "$container" ]; then 
+if [ -z "$container" ]; then
     printf "\
 CREATED AT: %s
 STATUS: %s" "$CREATED_AT" "$STATUS"
@@ -38,7 +46,7 @@ fi
 
 docker exec "$container" /home/gin/get-node-info.sh
 
-CONTAINER_INFO=$(docker ps --filter "id=$container" --format "{{.CreatedAt}}\t{{.Status}}" --no-trunc 2> /dev/null)
+CONTAINER_INFO=$(docker ps --filter "id=$container" --format "{{.CreatedAt}}\t{{.Status}}" --no-trunc 2>/dev/null)
 CREATED_AT=$(printf "%s" "$CONTAINER_INFO" | awk -F "\t" '{print $1}')
 STATUS=$(printf "%s" "$CONTAINER_INFO" | awk -F "\t" '{print $2}')
 
